@@ -12,7 +12,7 @@ class MyThread(threading.Thread):
         self.func = func
         self.args = args
 
-    def getResult(self):
+    def get_result(self):
         return self.res
 
     def run(self):
