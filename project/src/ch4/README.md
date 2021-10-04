@@ -184,6 +184,8 @@ if __name__ == '__main__':
 
 #### 派生 Thread 的子类并创建子类实例
 
+文件另存为 `myThread.py`。
+
 ```python
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
@@ -234,4 +236,94 @@ if __name__ == '__main__':
 
 
 
+```
+
+## 单线程与多线程执行对比
+
+```python
+#!/usr/local/bin/python3
+# -*- coding: utf-8 -*-
+
+from myThread import MyThread
+from time import ctime, sleep
+
+
+def fib(x):
+    sleep(0.005)
+    if x < 2:
+        return 1
+    return fib(x - 2) + fib(x - 1)
+
+
+def fac(x):
+    sleep(0.1)
+    if x < 2:
+        return 1
+    return x * fac(x - 1)
+
+
+def sum(x):
+    sleep(0.1)
+    if x < 2:
+        return 1
+    return x + sum(x - 1)
+
+
+funcs = [fib, fac, sum]
+n = 12
+
+
+def main():
+    nfuncs = range(len(funcs))
+
+    print('*** SINGLE THREAD')
+    for i in nfuncs:
+        print('starting', funcs[i].__name__, 'at:', ctime())
+        print(funcs[i](n))
+        print (funcs[i].__name__, 'finished at:', ctime())
+
+    print('*** MULTIPLE THREADS')
+    threads = []
+    for i in nfuncs:
+        t = MyThread(funcs[i], (n,), funcs[i].__name__)
+        threads.append(t)
+
+    for i in nfuncs:
+        threads[i].start()
+
+    for i in nfuncs:
+        threads[i].join()
+        print(threads[i].get_result())
+
+    print('all DONE')
+
+
+if __name__ == '__main__':
+    main()
+
+
+```
+
+```shell
+*** SINGLE THREAD
+starting fib at: Mon Oct  4 22:48:36 2021
+233
+fib finished at: Mon Oct  4 22:48:39 2021
+starting fac at: Mon Oct  4 22:48:39 2021
+479001600
+fac finished at: Mon Oct  4 22:48:40 2021
+starting sum at: Mon Oct  4 22:48:40 2021
+78
+sum finished at: Mon Oct  4 22:48:41 2021
+*** MULTIPLE THREADS
+starting fib at: Mon Oct  4 22:48:41 2021
+starting fac at: Mon Oct  4 22:48:41 2021
+starting sum at: Mon Oct  4 22:48:41 2021
+sum finished at: Mon Oct  4 22:48:43 2021
+fac finished at: Mon Oct  4 22:48:43 2021
+fib finished at: Mon Oct  4 22:48:44 2021
+233
+479001600
+78
+all DONE
 ```
